@@ -19,10 +19,10 @@ key_mappings = {
     'move_down': keyboard.KeyCode(char='k'),  # Move mouse down
     'move_left': keyboard.KeyCode(char='j'),  # Move mouse left
     'move_right': keyboard.KeyCode(char='l'),  # Move mouse right
-    'left_click': keyboard.KeyCode(char='q'),  # Left click
+    'left_click': keyboard.KeyCode(char='q'),  # Left click (Ctrl + Q)
+    'right_click': keyboard.KeyCode(char='w'),  # Right click (Ctrl + W)
     'drag_start': keyboard.KeyCode(char='y'),   # Start drag (Alt + Y)
     'drag_stop': keyboard.KeyCode(char='n'),    # Stop drag (Alt + N)
-    'right_click': keyboard.KeyCode(char='o'),  # Right click
     'scroll_up': keyboard.KeyCode(char='p'),     # Scroll up
     'scroll_down': keyboard.KeyCode(char=';'),   # Scroll down
     'escape': keyboard.Key.esc                    # Escape key
@@ -43,46 +43,40 @@ def on_press(key):
     if key == key_mappings['toggle_mouse']:
         toggle_mouse_control()
 
-    # If mouse control is active and Alt key is pressed, check for movement keys
+    # If mouse control is active, check for key combinations
     if mouse_control_active:
         is_alt_pressed = keyboard.Key.alt in current_keys or keyboard.Key.alt_l in current_keys
+        is_ctrl_pressed = keyboard.Key.ctrl in current_keys or keyboard.Key.ctrl_l in current_keys
 
-        if is_alt_pressed:
-            if key == key_mappings['move_up']:
-                mouse.move(0, -mouse_speed)  # Move mouse up
-            elif key == key_mappings['move_down']:
-                mouse.move(0, mouse_speed)  # Move mouse down
-            elif key == key_mappings['move_left']:
-                mouse.move(-mouse_speed, 0)  # Move mouse left
-            elif key == key_mappings['move_right']:
-                mouse.move(mouse_speed, 0)  # Move mouse right
-            
-            # Left Click (Alt + U)
-            elif key == key_mappings['left_click']:
+        # Handle Ctrl combinations for mouse clicks
+        if is_ctrl_pressed:
+            if key == key_mappings['left_click']:
                 mouse.click(Button.left)
                 print("Left Click executed")
-            
-            # Start Drag (Alt + Y)
-            elif key == key_mappings['drag_start'] and not drag_active:
+            elif key == key_mappings['right_click']:
+                mouse.click(Button.right)
+                print("Right Click executed")
+
+        # Handle Alt combinations for movement and other actions
+        elif is_alt_pressed:
+            if key == key_mappings['move_up']:
+                mouse.move(0, -mouse_speed)
+            elif key == key_mappings['move_down']:
+                mouse.move(0, mouse_speed)
+            elif key == key_mappings['move_left']:
+                mouse.move(-mouse_speed, 0)
+            elif key == key_mappings['move_right']:
+                mouse.move(mouse_speed, 0)
+            elif key == key_mappings['drag_start'] and not drag_active: 
                 mouse.press(Button.left)
                 drag_active = True
                 print("Drag started")
-            
-            # Stop Drag (Alt + H)
             elif key == key_mappings['drag_stop'] and drag_active:
                 mouse.release(Button.left)
                 drag_active = False
                 print("Drag stopped")
-            
-            # Right Click
-            elif key == key_mappings['right_click']:
-                mouse.click(Button.right)
-            
-            # Scroll Up
             elif key == key_mappings['scroll_up']:
                 mouse.scroll(0, 1)
-            
-            # Scroll Down
             elif key == key_mappings['scroll_down']:
                 mouse.scroll(0, -1)
 
